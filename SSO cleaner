@@ -1,0 +1,51 @@
+#Created by Rafal Dobrosielski
+
+
+#Kill Task
+taskkill /F /IM "chrome.exe"
+taskkill /F /IM "iexplore.exe"
+
+#Delete Chrome caches
+
+$Credential = $Host.ui.PromptForCredential("Need admin credential to perform the clean up", "Please enter your AMERICAS user name and password.", "AMERICAS\", "NetBiosUserName")
+
+$Items = @("*Archived History*", "*Cache\*", "Media Cache", "*Cookies*", "*History*", "*Login Data*", "*Top Sites*", "*Visited Links*", "*Web Data*") 
+
+$Folder = "C:\Users\*\AppData\Local\Google\Chrome\User Data\Default"
+ 
+$Items | ForEach-Object { Remove-Item "$Folder\$_" -Force -Recurse}
+
+#Delete Windows/Generic caches
+
+}
+cmdkey /list | ForEach-Object{if($_ -like "*Target:*" -and $_ -like "*microsoft*"){cmdkey /del:($_ -replace " ","" -replace "Target:","")}}
+}
+cmdkey /list | ForEach-Object{if($_ -like "*Target:*" -and $_ -like "*virtual*"){cmdkey /del:($_ -replace " ","" -replace "Target:","")}}
+}
+cmdkey /list | ForEach-Object{if($_ -like "*Target:*" -and $_ -like "*outlook*"){cmdkey /del:($_ -replace " ","" -replace "Target:","")}}
+}
+cmdkey /list | ForEach-Object{if($_ -like "*Target:*" -and $_ -like "*O365*"){cmdkey /del:($_ -replace " ","" -replace "Target:","")}}
+}
+cmdkey /list | ForEach-Object{if($_ -like "*Target:*" -and $_ -like "*sso_pop*"){cmdkey /del:($_ -replace " ","" -replace "Target:","")}}
+
+#Delete Internet exploler caches
+
+$caches = "C:\users\*\AppData\Local\Microsoft\Windows\Temporary Internet Files\*" 
+$caches1 = "C:\Users\*\AppData\Local\Microsoft\Windows\Caches"  
+$caches2 = "C:\Documents and Settings\*\Cookies\*"
+$caches3 = "C:\Documents and Settings\*\Local Settings\Temp\*"  
+$caches4 = "C:\Documents and Settings\*\Local Settings\Temporary Internet Files\*"   
+$caches5 = "C:\Documents and Settings\*\Local Settings\History\*"  
+$loctemp = "C:\Users\*\AppData\Local\Microsoft\Windows\Temporary Internet Files\*"  
+$loctemp1 = "C:\Users\*\AppData\Local\Microsoft\Windows\INetCache\*"
+$loctemp2 = "C:\Users\*\AppData\Local\Microsoft\Windows\IECompatCache\*"
+$loctemp3 = "C:\Users\*\AppData\Local\Microsoft\Windows\IEDownloadHistory\*"
+$loctemp4 = "C:\Users\*\AppData\Local\Microsoft\Windows\INetCookies\*"
+$loctemp5 = "C:\Users\*\AppData\Local\Microsoft\Windows\History\*"
+$loctemp6 = "C:\Users\*\AppData\Local\Microsoft\Windows\WebCache\*"
+
+Get-ChildItem $caches, $caches1, $caches2, $caches3, $caches4, $caches5, $loctemp, $loctemp1, $loctemp2, $loctemp3, $loctemp4, $loctemp5, $loctemp6 -Recurse -Force -Verbose -ErrorAction SilentlyContinue | Start-Job {remove-item -force -Verbose -recurse -ErrorAction SilentlyContinue} -Credential $Credential
+
+#Group Policy update
+
+gpupdate /force
